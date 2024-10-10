@@ -438,6 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lion: {fileID: 948158213}
   monkey: {fileID: 932014499}
+  decoyPrefab: {fileID: 1432359308773647827, guid: 9f141a869b2e1584882bae1b0e601edb, type: 3}
 --- !u!1 &948158205
 GameObject:
   m_ObjectHideFlags: 0

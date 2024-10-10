@@ -3,16 +3,20 @@ using UnityEngine;
 
 public class PowerUpController : MonoBehaviour
 {
-    public MoveLionWithBFS lion;
-    public MoveMonkey monkey;  // Assuming you have a script that controls the monkey's movement
+    public MoveLionWithBFS lion;  // Reference to the Lion controller (MoveLionWithBFS script)
+    public MoveMonkey monkey;     // Reference to the Monkey controller (MoveMonkey script)
 
-    private bool isFrozen = false;
-    private bool isSpeedBoostActive = false;
-    private bool isPhaseThruActive = false;
+    private bool isFrozen = false;            // Indicates if the Freeze power is active
+    private bool isSpeedBoostActive = false;  // Indicates if the Speed Boost power is active
+    private bool isPhaseThruActive = false;   // Indicates if the Phase-Thru power is active
+    private bool isDecoyActive = false;       // Indicates if the Decoy power is active
+
+    public GameObject decoyPrefab;  // Prefab for the Decoy object
+    private GameObject currentDecoy; // Reference to the currently active Decoy
 
     // Define layers for Monkey and Obstacles (ensure these layers exist in Unity)
-    private int monkeyLayer;
-    private int obstacleLayer;
+    private int monkeyLayer;         // The layer for the Monkey
+    private int obstacleLayer;       // The layer for Obstacles
 
     void Start()
     {
@@ -34,13 +38,18 @@ public class PowerUpController : MonoBehaviour
         {
             ActivateSpeedBoostPower();
         }
-
-        /* Check for input to activate Phase-thru Power (press '3')
+/*
+        // Check for input to activate Phase-thru Power (press '3')
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ActivatePhaseThruPower();
         }
-        */
+*/
+        // Check for input to activate Decoy Power (press '4')
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            ActivateDecoyPower();
+        }
     }
 
     void ActivateFreezePower()
@@ -110,4 +119,41 @@ public class PowerUpController : MonoBehaviour
 
         isPhaseThruActive = false;
     }
+
+    void ActivateDecoyPower()
+    {
+        // Check if the decoy power is already active
+        if (!isDecoyActive)
+        {
+            // Activate the decoy power
+            StartCoroutine(ActivateDecoy());
+        }
+    }
+
+   IEnumerator ActivateDecoy()
+    {
+        isDecoyActive = true;
+
+        // Spawn a decoy at the monkey's current position
+        Vector3 decoyPosition = monkey.transform.position;
+        GameObject decoy = Instantiate(decoyPrefab, decoyPosition, Quaternion.identity);
+
+        // Set the lion's target to the decoy's position
+        lion.SetTarget(decoy.transform.position);
+
+        // Wait until the lion reaches the decoy's position (or close enough)
+        while (Vector3.Distance(lion.transform.position, decoy.transform.position) > 0.5f)
+        {
+            yield return null;  // Wait until the lion reaches the decoy
+        }
+
+        // Destroy the decoy once the lion reaches it
+        Destroy(decoy);
+
+        // Reset the lion's target back to the monkey
+        lion.ResetTargetToMonkey();
+
+        isDecoyActive = false;
+    }
+
 }

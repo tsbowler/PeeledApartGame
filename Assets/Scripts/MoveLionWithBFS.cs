@@ -17,17 +17,23 @@ public class MoveLionWithBFS : MonoBehaviour
     public Animator animator;
     private float currentMoveSpeed;
 
+    private Transform currentTarget;  // Added: Keeps track of current target (monkey or decoy)
+
     void Start()
     {
         targetPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         currentMoveSpeed = normalMoveSpeed;
+
+        // Initially, the lion will target the monkey
+        currentTarget = monkey;
     }
 
     void Update()
     {
-        if (HasLineOfSight(monkey.position))
+        // Check if the lion has a line of sight to the current target (monkey or decoy)
+        if (HasLineOfSight(currentTarget.position))
         {
             currentMoveSpeed = lineOfSightMoveSpeed * moveDistance;
             animator.speed = 2f;
@@ -40,7 +46,7 @@ public class MoveLionWithBFS : MonoBehaviour
 
         if (!isMoving)
         {
-            List<Vector2> path = FindPathBFS(transform.position, monkey.position);
+            List<Vector2> path = FindPathBFS(transform.position, currentTarget.position);
 
             if (path != null && path.Count > 0)
             {
@@ -59,7 +65,7 @@ public class MoveLionWithBFS : MonoBehaviour
         while ((Vector2)transform.position != targetPosition)
         {
             rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, currentMoveSpeed * Time.fixedDeltaTime));
-            
+
             if (targetPosition.x > transform.position.x)
             {
                 transform.localScale = new Vector3(1, 1, 1);
@@ -141,5 +147,20 @@ public class MoveLionWithBFS : MonoBehaviour
         Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);
         TileBase tile = obstaclesTilemap.GetTile(cellPosition);
         return tile != null;
+    }
+
+    // Added: Method to set the lion's target (for decoy logic)
+    public void SetTarget(Vector3 target)
+    {
+        // Create a temporary game object for the new target's position
+        GameObject tempTarget = new GameObject("Temporary Target");
+        tempTarget.transform.position = target;
+        currentTarget = tempTarget.transform;
+    }
+
+    // Added: Method to reset the lion's target back to the monkey
+    public void ResetTargetToMonkey()
+    {
+        currentTarget = monkey;
     }
 }
