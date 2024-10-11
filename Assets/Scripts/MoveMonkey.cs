@@ -7,7 +7,8 @@ public class MoveMonkey : MonoBehaviour
 {
     public float moveDistance = 1f;
     public float moveSpeed = 1f;
-    public Tilemap obstaclesTilemap;  // Reference to the obstacle tilemap
+    private float speedDefault;
+    public Tilemap obstaclesTilemap;
     private Vector2 targetPosition;
     private Animator animator;
     private Rigidbody2D rb;
@@ -17,6 +18,7 @@ public class MoveMonkey : MonoBehaviour
         targetPosition = transform.position;
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        speedDefault = moveSpeed;
     }
 
     void Update()
@@ -44,25 +46,35 @@ public class MoveMonkey : MonoBehaviour
                 transform.localScale = new Vector3(1, 1, 1);
             }
 
-            // Check if the newPosition is walkable (not an obstacle)
             if (!IsObstacleAtPosition(newPosition))
             {
-                targetPosition = newPosition;  // Allow movement if no obstacle
+                targetPosition = newPosition; 
             }
         }
 
         rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, moveDistance * moveSpeed * Time.fixedDeltaTime));
 
-        bool isWalking = (Vector2)transform.position != targetPosition;
-        animator.SetBool("isWalking", isWalking);
+        if ((moveSpeed != speedDefault) && ((Vector2)transform.position != targetPosition))
+        {
+            animator.SetBool("isRunning", true);
+        }
+        else
+        {
+            animator.SetBool("isRunning", false);
+            bool isWalking = (Vector2)transform.position != targetPosition;
+            animator.SetBool("isWalking", isWalking);
+        }
     }
 
-    // Function to check if the target position is blocked by an obstacle
     bool IsObstacleAtPosition(Vector2 position)
     {
-        Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);  // Convert world position to tilemap grid cell
-        TileBase tile = obstaclesTilemap.GetTile(cellPosition);  // Get the tile at the target position
-        return tile != null;  // Return true if there's a tile (i.e., an obstacle)
+        Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);
+        TileBase tile = obstaclesTilemap.GetTile(cellPosition);
+        return tile != null;  
+    }
+
+    public void UpdateTargetPosition(Vector2 newTargetPosition)
+    {
+        targetPosition = newTargetPosition;
     }
 }
-

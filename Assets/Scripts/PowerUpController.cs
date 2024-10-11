@@ -3,24 +3,25 @@ using UnityEngine;
 
 public class PowerUpController : MonoBehaviour
 {
-    public MoveLionWithBFS lion;  // Reference to the Lion controller (MoveLionWithBFS script)
-    public MoveMonkey monkey;     // Reference to the Monkey controller (MoveMonkey script)
+    public MoveLionWithBFS lion;  
+    public MoveMonkey monkey;     
 
-    private bool isFrozen = false;            // Indicates if the Freeze power is active
-    private bool isSpeedBoostActive = false;  // Indicates if the Speed Boost power is active
-    private bool isPhaseThruActive = false;   // Indicates if the Phase-Thru power is active
-    private bool isDecoyActive = false;       // Indicates if the Decoy power is active
+    private bool isFrozen = false;            
+    private bool isSpeedBoostActive = false;  
+    private bool isPhaseThruActive = false;   
+    private bool isDecoyActive = false;       
+    private bool isTeleportSet = false;  
+    private Vector3 teleportLocation;    
 
-    public GameObject decoyPrefab;  // Prefab for the Decoy object
-    private GameObject currentDecoy; // Reference to the currently active Decoy
 
-    // Define layers for Monkey and Obstacles (ensure these layers exist in Unity)
-    private int monkeyLayer;         // The layer for the Monkey
-    private int obstacleLayer;       // The layer for Obstacles
+    public GameObject decoyPrefab;  
+    private GameObject currentDecoy; 
+
+    private int monkeyLayer;         
+    private int obstacleLayer;       
 
     void Start()
     {
-        // Assign the layers by name
         monkeyLayer = LayerMask.NameToLayer("Monkey");
         obstacleLayer = LayerMask.NameToLayer("Obstacle");
     }
@@ -49,6 +50,11 @@ public class PowerUpController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             ActivateDecoyPower();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            ActivateTeleportPower();
         }
     }
 
@@ -87,12 +93,12 @@ public class PowerUpController : MonoBehaviour
     {
         isSpeedBoostActive = true;
 
-        float originalSpeed = monkey.moveSpeed;  // Save the original speed of the monkey
-        monkey.moveSpeed = boostedSpeed;  // Set the monkey's speed to the boosted speed
+        float originalSpeed = monkey.moveSpeed;  
+        monkey.moveSpeed = boostedSpeed;  
 
-        yield return new WaitForSeconds(boostDuration);  // Wait for the boost duration
+        yield return new WaitForSeconds(boostDuration);  
 
-        monkey.moveSpeed = originalSpeed;  // Restore the original speed of the monkey
+        monkey.moveSpeed = originalSpeed;  
 
         isSpeedBoostActive = false;
     }
@@ -156,4 +162,33 @@ public class PowerUpController : MonoBehaviour
         isDecoyActive = false;
     }
 
+    void ActivateTeleportPower()
+    {
+        if (!isTeleportSet)
+        {
+            // Set the teleport location
+            teleportLocation = SnapToGrid(monkey.transform.position);
+            isTeleportSet = true;
+            Debug.Log("Teleport location set at: " + teleportLocation);
+        }
+        else
+        {
+            // Teleport the monkey to the set location
+            monkey.transform.position = teleportLocation;
+            monkey.UpdateTargetPosition(teleportLocation);
+            isTeleportSet = false;
+            Debug.Log("Teleported to: " + teleportLocation);
+        }
+    }
+
+        Vector3 SnapToGrid(Vector3 originalPosition)
+    {
+        float snapValue = 1.0f;  // The step between the fixed positions (e.g., 1.0 for 0.5, 1.5, etc.)
+        float offset = -0.5f;    // Offset for the fixed values (-1.5, -0.5, 0.5, etc.)
+
+        float snappedX = Mathf.Round((originalPosition.x - offset) / snapValue) * snapValue + offset;
+        float snappedY = Mathf.Round((originalPosition.y - offset) / snapValue) * snapValue + offset;
+
+        return new Vector3(snappedX, snappedY, originalPosition.z);
+    }
 }
