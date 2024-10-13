@@ -7,6 +7,12 @@ public class PowerUpController : MonoBehaviour
     public MoveLionWithBFS lion;  
     public MoveMonkey monkey;     
 
+    public SpriteRenderer freezeSprite;
+    public SpriteRenderer speedSprite;
+    public SpriteRenderer decoySprite;
+    public SpriteRenderer portalSprite;
+    //public SpriteRenderer wingsSprite;
+
     private bool isFrozen = false;            
     private bool isSpeedBoostActive = false;  
     private bool isPhaseThruActive = false;   
@@ -36,18 +42,21 @@ public class PowerUpController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1) && storedPowerUps.Contains(PowerUpType.Freeze))
         {
             ActivateFreezePower();
+            freezeSprite.enabled = false;
             storedPowerUps.Remove(PowerUpType.Freeze);  // Remove the power after using
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost))
         {
             ActivateSpeedBoostPower();
+            speedSprite.enabled = false;
             storedPowerUps.Remove(PowerUpType.SpeedBoost);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3) && storedPowerUps.Contains(PowerUpType.Decoy))
         {
             ActivateDecoyPower();
+            decoySprite.enabled = false;
             storedPowerUps.Remove(PowerUpType.Decoy);
         }
 
@@ -56,6 +65,7 @@ public class PowerUpController : MonoBehaviour
             ActivateTeleportPower();
             if (!isTeleportSet)
             {
+                portalSprite.enabled = false;
                 storedPowerUps.Remove(PowerUpType.Teleport);
             }
         }
@@ -81,6 +91,21 @@ public class PowerUpController : MonoBehaviour
             PowerUpType randomPower = availablePowerUps[Random.Range(0, availablePowerUps.Count)];
             storedPowerUps.Add(randomPower);
             Debug.Log("Unlocked power: " + randomPower);
+            switch(randomPower)
+            {
+                case PowerUpType.Freeze: 
+                    freezeSprite.enabled = true;
+                    break;
+                case PowerUpType.SpeedBoost:
+                    speedSprite.enabled = true;
+                    break;
+                case PowerUpType.Decoy:
+                    decoySprite.enabled = true;
+                    break;
+                case PowerUpType.Teleport:
+                    portalSprite.enabled = true;
+                    break;
+            }
         }
         else
         {
