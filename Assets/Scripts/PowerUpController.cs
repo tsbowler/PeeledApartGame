@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerUpController : MonoBehaviour
@@ -13,7 +14,6 @@ public class PowerUpController : MonoBehaviour
     private bool isTeleportSet = false;  
     private Vector3 teleportLocation;    
 
-
     public GameObject decoyPrefab;  
     private GameObject currentDecoy; 
     public GameObject portalPrefab;  
@@ -21,6 +21,9 @@ public class PowerUpController : MonoBehaviour
 
     private int monkeyLayer;         
     private int obstacleLayer;       
+
+    public enum PowerUpType { Freeze, SpeedBoost, PhaseThru, Decoy, Teleport }
+    private List<PowerUpType> storedPowerUps = new List<PowerUpType>();
 
     void Start()
     {
@@ -30,33 +33,58 @@ public class PowerUpController : MonoBehaviour
 
     void Update()
     {
-        // Check for input to activate Freeze Power (press '1')
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && storedPowerUps.Contains(PowerUpType.Freeze))
         {
             ActivateFreezePower();
+            storedPowerUps.Remove(PowerUpType.Freeze);  // Remove the power after using
         }
 
-        // Check for input to activate Speed Boost Power (press '2')
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost))
         {
             ActivateSpeedBoostPower();
+            storedPowerUps.Remove(PowerUpType.SpeedBoost);
         }
-/*
+
+        if (Input.GetKeyDown(KeyCode.Alpha3) && storedPowerUps.Contains(PowerUpType.Decoy))
+        {
+            ActivateDecoyPower();
+            storedPowerUps.Remove(PowerUpType.Decoy);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4) && storedPowerUps.Contains(PowerUpType.Teleport))
+        {
+            ActivateTeleportPower();
+            if (!isTeleportSet)
+            {
+                storedPowerUps.Remove(PowerUpType.Teleport);
+            }
+        }
+
+        /*
         // Check for input to activate Phase-thru Power (press '3')
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             ActivatePhaseThruPower();
         }
-*/
-        // Check for input to activate Decoy Power (press '4')
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ActivateDecoyPower();
-        }
+        */
+    }
 
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+    public void UnlockRandomPower()
+    {
+        List<PowerUpType> availablePowerUps = new List<PowerUpType> { PowerUpType.Freeze, PowerUpType.SpeedBoost, PowerUpType.Decoy, PowerUpType.Teleport };
+
+        // Remove powers already stored
+        availablePowerUps.RemoveAll(p => storedPowerUps.Contains(p));
+
+        if (availablePowerUps.Count > 0)
         {
-            ActivateTeleportPower();
+            PowerUpType randomPower = availablePowerUps[Random.Range(0, availablePowerUps.Count)];
+            storedPowerUps.Add(randomPower);
+            Debug.Log("Unlocked power: " + randomPower);
+        }
+        else
+        {
+            Debug.Log("All powers already unlocked.");
         }
     }
 
