@@ -16,6 +16,8 @@ public class PowerUpController : MonoBehaviour
 
     public GameObject decoyPrefab;  
     private GameObject currentDecoy; 
+    public GameObject portalPrefab;  
+    private GameObject currentPortal; 
 
     private int monkeyLayer;         
     private int obstacleLayer;       
@@ -41,18 +43,18 @@ public class PowerUpController : MonoBehaviour
         }
 /*
         // Check for input to activate Phase-thru Power (press '3')
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             ActivatePhaseThruPower();
         }
 */
         // Check for input to activate Decoy Power (press '4')
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ActivateDecoyPower();
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             ActivateTeleportPower();
         }
@@ -168,6 +170,7 @@ public class PowerUpController : MonoBehaviour
         {
             // Set the teleport location
             teleportLocation = SnapToGrid(monkey.transform.position);
+            currentPortal = Instantiate(portalPrefab, teleportLocation, Quaternion.identity);
             isTeleportSet = true;
             Debug.Log("Teleport location set at: " + teleportLocation);
         }
@@ -177,6 +180,7 @@ public class PowerUpController : MonoBehaviour
             monkey.transform.position = teleportLocation;
             monkey.UpdateTargetPosition(teleportLocation);
             isTeleportSet = false;
+            Destroy(currentPortal);
             Debug.Log("Teleported to: " + teleportLocation);
         }
     }
