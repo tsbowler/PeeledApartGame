@@ -17,7 +17,8 @@ public class MoveLionWithBFS : MonoBehaviour
     public Animator animator;
     private float currentMoveSpeed;
 
-    private Transform currentTarget;  // Added: Keeps track of current target (monkey or decoy)
+    private Transform currentTarget;  // Keeps track of current target (monkey or decoy)
+    private Vector2 lastValidMonkeyPosition; // Track the last valid monkey position
 
     void Start()
     {
@@ -28,6 +29,9 @@ public class MoveLionWithBFS : MonoBehaviour
 
         // Initially, the lion will target the monkey
         currentTarget = monkey;
+
+        // Initialize the last valid position to the monkey's starting position
+        lastValidMonkeyPosition = monkey.position;
     }
 
     void Update()
@@ -46,7 +50,14 @@ public class MoveLionWithBFS : MonoBehaviour
 
         if (!isMoving)
         {
-            List<Vector2> path = FindPathBFS(transform.position, currentTarget.position);
+            // If the monkey is not on an obstacle, update the last valid position
+            if (!IsMonkeyOnObstacle())
+            {
+                lastValidMonkeyPosition = currentTarget.position;
+            }
+
+            // Find the path to the last valid position of the monkey
+            List<Vector2> path = FindPathBFS(transform.position, lastValidMonkeyPosition);
 
             if (path != null && path.Count > 0)
             {
@@ -147,6 +158,12 @@ public class MoveLionWithBFS : MonoBehaviour
         Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);
         TileBase tile = obstaclesTilemap.GetTile(cellPosition);
         return tile != null;
+    }
+
+    bool IsMonkeyOnObstacle()
+    {
+        Vector3Int monkeyTilePos = obstaclesTilemap.WorldToCell(monkey.position);
+        return obstaclesTilemap.HasTile(monkeyTilePos);
     }
 
     // Added: Method to set the lion's target (for decoy logic)

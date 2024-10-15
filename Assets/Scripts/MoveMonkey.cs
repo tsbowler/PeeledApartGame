@@ -7,11 +7,13 @@ public class MoveMonkey : MonoBehaviour
 {
     public float moveDistance = 1f;
     public float moveSpeed = 1f;
+    public bool isFlying = false;
     private float speedDefault;
     public Tilemap obstaclesTilemap;
     private Vector2 targetPosition;
     private Animator animator;
     private Rigidbody2D rb;
+    
 
     void Start()
     {
@@ -46,10 +48,11 @@ public class MoveMonkey : MonoBehaviour
                 transform.localScale = new Vector3(1, 1, 1);
             }
 
-            if (!IsObstacleAtPosition(newPosition))
+            if (!IsObstacleAtPosition(newPosition) || isFlying)
             {
                 targetPosition = newPosition; 
             }
+            
         }
 
         rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, moveDistance * moveSpeed * Time.fixedDeltaTime));

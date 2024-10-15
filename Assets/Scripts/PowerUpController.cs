@@ -70,13 +70,11 @@ public class PowerUpController : MonoBehaviour
             }
         }
 
-        /*
-        // Check for input to activate Phase-thru Power (press '3')
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             ActivatePhaseThruPower();
         }
-        */
+    
     }
 
     public void UnlockRandomPower()
@@ -171,12 +169,13 @@ public class PowerUpController : MonoBehaviour
         isPhaseThruActive = true;
 
         // Ignore collisions between Monkey and Obstacles
-        Physics2D.IgnoreLayerCollision(monkeyLayer, obstacleLayer, true);
+        monkey.isFlying = true;
 
         yield return new WaitForSeconds(phaseDuration);  // Wait for the phase-thru duration
 
         // Restore normal collisions between Monkey and Obstacles
-        Physics2D.IgnoreLayerCollision(monkeyLayer, obstacleLayer, false);
+        monkey.isFlying = false;
+
 
         isPhaseThruActive = false;
     }
