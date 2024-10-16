@@ -11,7 +11,7 @@ public class PowerUpController : MonoBehaviour
     public SpriteRenderer speedSprite;
     public SpriteRenderer decoySprite;
     public SpriteRenderer portalSprite;
-    //public SpriteRenderer wingsSprite;
+    public SpriteRenderer wingsSprite;
 
     private bool isFrozen = false;            
     private bool isSpeedBoostActive = false;  
@@ -46,7 +46,7 @@ public class PowerUpController : MonoBehaviour
             storedPowerUps.Remove(PowerUpType.Freeze);  // Remove the power after using
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost) && !isPhaseThruActive)
         {
             ActivateSpeedBoostPower();
             speedSprite.enabled = false;
@@ -70,16 +70,18 @@ public class PowerUpController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha5))
+        if (Input.GetKeyDown(KeyCode.Alpha5) && storedPowerUps.Contains(PowerUpType.PhaseThru) && !isSpeedBoostActive)
         {
             ActivatePhaseThruPower();
+            wingsSprite.enabled = false;
+            storedPowerUps.Remove(PowerUpType.PhaseThru);
         }
     
     }
 
     public void UnlockRandomPower()
     {
-        List<PowerUpType> availablePowerUps = new List<PowerUpType> { PowerUpType.Freeze, PowerUpType.SpeedBoost, PowerUpType.Decoy, PowerUpType.Teleport };
+        List<PowerUpType> availablePowerUps = new List<PowerUpType> { PowerUpType.Freeze, PowerUpType.SpeedBoost, PowerUpType.Decoy, PowerUpType.Teleport, PowerUpType.PhaseThru };
 
         // Remove powers already stored
         availablePowerUps.RemoveAll(p => storedPowerUps.Contains(p));
@@ -102,6 +104,9 @@ public class PowerUpController : MonoBehaviour
                     break;
                 case PowerUpType.Teleport:
                     portalSprite.enabled = true;
+                    break;
+                case PowerUpType.PhaseThru:
+                    wingsSprite.enabled = true;
                     break;
             }
         }

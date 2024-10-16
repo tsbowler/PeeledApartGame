@@ -50,8 +50,12 @@ public class MoveMonkey : MonoBehaviour
 
             if (!IsObstacleAtPosition(newPosition) || isFlying)
             {
-                targetPosition = newPosition; 
+                targetPosition = newPosition;
             }
+            if (isFlying)
+                    animator.SetBool("isFlying", true);
+                else
+                    animator.SetBool("isFlying", false);
             
         }
 

@@ -10,7 +10,7 @@ public class BananaSpawnerScript : MonoBehaviour
     public GameObject monkey;  // Reference to the monkey
     public GeneralLogic generalLogic;  // Reference to GeneralLogic
 
-    private float spawnInterval = 20f; // Interval in seconds to spawn a banana
+    public float spawnInterval = 20f; // Interval in seconds to spawn a banana
 
     void Start()
     {

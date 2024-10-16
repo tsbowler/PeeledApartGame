@@ -66,6 +66,15 @@ public class MoveLionWithBFS : MonoBehaviour
 
             StartCoroutine(MoveLion());
         }
+
+        if(moveDistance == 0)
+        {
+            animator.SetBool("isFrozen", true);
+        }
+        else
+        {
+            animator.SetBool("isFrozen", false);
+        }
     }
 
     IEnumerator MoveLion()
