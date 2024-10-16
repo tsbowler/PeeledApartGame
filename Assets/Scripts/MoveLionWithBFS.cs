@@ -8,7 +8,7 @@ public class MoveLionWithBFS : MonoBehaviour
     public Transform monkey;
     public Tilemap obstaclesTilemap;
     public float normalMoveSpeed = 1f;
-    public float lineOfSightMoveSpeed = 2f;
+    public float lineOfSightMoveSpeed;
     public float moveDistance = 1f;
     public LayerMask obstacleLayerMask;
     private Vector2 targetPosition;
@@ -19,12 +19,22 @@ public class MoveLionWithBFS : MonoBehaviour
 
     private Transform currentTarget;  // Keeps track of current target (monkey or decoy)
     private Vector2 lastValidMonkeyPosition; // Track the last valid monkey position
+    private SetupScript setupScript;
 
     void Start()
     {
         targetPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        
+        // Access the lion speed from the SetupScript instance
+        if (SetupScript.instance != null)
+        {
+            normalMoveSpeed = SetupScript.instance.GetLionSpeed();
+        }
+
+        lineOfSightMoveSpeed = 2 * normalMoveSpeed;
+
         currentMoveSpeed = normalMoveSpeed;
 
         // Initially, the lion will target the monkey

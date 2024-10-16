@@ -9,6 +9,11 @@ public class GeneralLogic : MonoBehaviour
     private int score = 0;               // Tracks the player's score
     private float elapsedTime = 300f;      // Tracks the elapsed time since the start of the game
 
+    void Start()
+    {
+        //AudioManager.instance.PlayBackgroundMusic();
+    }
+
     void Update()
     {
         // Update the elapsed time

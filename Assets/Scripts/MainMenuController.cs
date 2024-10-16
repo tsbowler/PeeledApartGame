@@ -17,6 +17,8 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
+        //AudioManager.instance.PlayMenuMusic();
+
         // Hook up button click events
         playButton.onClick.AddListener(OnPlayButtonClick);
         gameSetupButton.onClick.AddListener(OnGameSetupButtonClick);
@@ -60,22 +62,15 @@ public class MainMenuController : MonoBehaviour
     // Called when user confirms they want to quit the game
     public void ConfirmQuit()
     {
-        // Quit the application
         Application.Quit();
     }
 
-    // Called when user cancels quitting
-    public void CancelQuit()
-    {
-        // Hide the quit confirmation panel
-        quitConfirmationPanel.SetActive(false);
-    }
-
-    // Return to main menu from Game Setup or How to Play
+    // Return to main menu from panels
     public void ReturnToMainMenu()
     {
         // Hide all sub-menus and return to the main menu
         gameSetupPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
+        quitConfirmationPanel.SetActive(false);
     }
 }
