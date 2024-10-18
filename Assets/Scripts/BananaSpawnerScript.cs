@@ -4,74 +4,71 @@ using UnityEngine.Tilemaps;
 
 public class BananaSpawnerScript : MonoBehaviour
 {
-    public Tilemap groundTilemap;  // Reference to ground tilemap
-    public Tilemap obstaclesTilemap; // Reference to obstacle tilemap
-    public GameObject bananaPrefab; // Banana prefab to spawn
-    public GameObject monkey;  // Reference to the monkey
-    public GeneralLogic generalLogic;  // Reference to GeneralLogic
+    public Tilemap groundTilemap;  
+    public Tilemap obstaclesTilemap; 
+    public GameObject bananaPrefab; 
+    public GameObject monkey;  
+    public GeneralLogic generalLogic;  
 
-    public float spawnInterval = 20f; // Interval in seconds to spawn a banana
+    public float spawnInterval = 20f;
 
     void Start()
     {
-        // Start the coroutine to spawn bananas at regular intervals
         StartCoroutine(SpawnBananaRoutine());
     }
 
     IEnumerator SpawnBananaRoutine()
     {
-        while (true) // Keep spawning bananas at intervals
+        while (true)
         {
             SpawnBanana();
-            yield return new WaitForSeconds(spawnInterval); // Wait for 20 seconds
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 
     void SpawnBanana()
     {
-        // Get a valid random position on the ground
-        Vector3Int randomTilePos = GetRandomGroundTile();
+        Vector3Int randomTilePos = GetValidGroundTile(); // Use updated method to find a valid, unoccupied tile
 
-        // Convert the tile position to world position for spawning the banana
         if (randomTilePos != Vector3Int.zero && bananaPrefab != null)
         {
-            Vector3 spawnPosition = groundTilemap.CellToWorld(randomTilePos) + new Vector3(0.5f, 0.5f, 0); // Adjust to center the banana on the tile
+            Vector3 spawnPosition = groundTilemap.CellToWorld(randomTilePos) + new Vector3(0.5f, 0.5f, 0); 
 
             GameObject newBanana = Instantiate(bananaPrefab, spawnPosition, Quaternion.identity);
             
-            // Initialize the banana with references to monkey and GeneralLogic
             BananaScript bananaScript = newBanana.GetComponent<BananaScript>();
             bananaScript.Initialize(monkey, generalLogic);
-
-            Debug.Log("Banana spawned at: " + spawnPosition);
-        }
-        else
-        {
-            Debug.LogWarning("Could not find a valid ground tile to spawn a banana or bananaPrefab is missing.");
         }
     }
 
-    Vector3Int GetRandomGroundTile()
+    Vector3Int GetValidGroundTile()
     {
-        // Get bounds of the ground tilemap
         BoundsInt bounds = groundTilemap.cellBounds;
 
-        // Try random positions within the bounds until a valid ground tile is found
-        for (int i = 0; i < 100; i++)  // Safety measure to avoid infinite loops
+        for (int i = 0; i < 100; i++)  // Try up to 100 times to find an unoccupied tile
         {
-            // Pick a random tile position within the bounds
             int randomX = Random.Range(bounds.xMin, bounds.xMax);
             int randomY = Random.Range(bounds.yMin, bounds.yMax);
             Vector3Int randomTilePos = new Vector3Int(randomX, randomY, 0);
 
-            // Check if the random tile is a valid ground tile and not an obstacle
             if (groundTilemap.HasTile(randomTilePos) && !obstaclesTilemap.HasTile(randomTilePos))
             {
-                return randomTilePos;
+                Vector3 worldPosition = groundTilemap.CellToWorld(randomTilePos) + new Vector3(0.5f, 0.5f, 0);
+
+                // Check if the tile is occupied by any object
+                if (!IsTileOccupied(worldPosition))
+                {
+                    return randomTilePos; // Return this tile if it's valid and unoccupied
+                }
             }
         }
 
-        // If no valid tile is found after 100 attempts, return Vector3Int.zero (invalid)
-        return Vector3Int.zero;
+        return Vector3Int.zero; // Return invalid position if no valid tile found
+    }
+
+    bool IsTileOccupied(Vector3 worldPosition)
+    {
+        Collider2D collider = Physics2D.OverlapCircle(worldPosition, 0.1f);
+        return collider != null;
     }
 }

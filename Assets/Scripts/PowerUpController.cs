@@ -6,6 +6,7 @@ public class PowerUpController : MonoBehaviour
 {
     public MoveLionWithBFS lion;  
     public MoveMonkey monkey;     
+    public SoundPlayer soundPlayer;
 
     public SpriteRenderer freezeSprite;
     public SpriteRenderer speedSprite;
@@ -18,8 +19,11 @@ public class PowerUpController : MonoBehaviour
     private bool isPhaseThruActive = false;   
     private bool isDecoyActive = false;       
     private bool isTeleportSet = false;  
+    private Vector3 decoyPosition;
     private Vector3 teleportLocation;    
 
+    public GameObject decoyMarkerPrefab;
+    private GameObject decoyMarker;
     public GameObject decoyPrefab;  
     private GameObject currentDecoy; 
     public GameObject portalPrefab;  
@@ -56,8 +60,6 @@ public class PowerUpController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3) && storedPowerUps.Contains(PowerUpType.Decoy))
         {
             ActivateDecoyPower();
-            decoySprite.enabled = false;
-            storedPowerUps.Remove(PowerUpType.Decoy);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha4) && storedPowerUps.Contains(PowerUpType.Teleport))
@@ -81,6 +83,8 @@ public class PowerUpController : MonoBehaviour
 
     public void UnlockRandomPower()
     {
+        soundPlayer.PlayPowerup();
+
         List<PowerUpType> availablePowerUps = new List<PowerUpType> { PowerUpType.Freeze, PowerUpType.SpeedBoost, PowerUpType.Decoy, PowerUpType.Teleport, PowerUpType.PhaseThru };
 
         // Remove powers already stored
@@ -90,7 +94,6 @@ public class PowerUpController : MonoBehaviour
         {
             PowerUpType randomPower = availablePowerUps[Random.Range(0, availablePowerUps.Count)];
             storedPowerUps.Add(randomPower);
-            Debug.Log("Unlocked power: " + randomPower);
             switch(randomPower)
             {
                 case PowerUpType.Freeze: 
@@ -110,10 +113,6 @@ public class PowerUpController : MonoBehaviour
                     break;
             }
         }
-        else
-        {
-            Debug.Log("All powers already unlocked.");
-        }
     }
 
     void ActivateFreezePower()
@@ -127,7 +126,7 @@ public class PowerUpController : MonoBehaviour
     IEnumerator FreezeLion(float freezeDuration)
     {
         isFrozen = true;
-
+        soundPlayer.PlayFreeze();
         lion.moveDistance = 0f;  // Freeze lion movement
         lion.animator.SetBool("isWalking", false);  // Stop walking animation
 
@@ -150,7 +149,7 @@ public class PowerUpController : MonoBehaviour
     IEnumerator SpeedBoost(float boostDuration, float boostedSpeed)
     {
         isSpeedBoostActive = true;
-
+        soundPlayer.PlayRunning();
         float originalSpeed = monkey.moveSpeed;  
         monkey.moveSpeed = boostedSpeed;  
 
@@ -165,14 +164,14 @@ public class PowerUpController : MonoBehaviour
     {
         if (!isPhaseThruActive)
         {
-            StartCoroutine(PhaseThru(5f));  // Allow monkey to phase through obstacles for 5 seconds
+            StartCoroutine(PhaseThru(7f));  // Allow monkey to phase through obstacles for x seconds
         }
     }
 
     IEnumerator PhaseThru(float phaseDuration)
     {
         isPhaseThruActive = true;
-
+        soundPlayer.PlayFlapWings();
         // Ignore collisions between Monkey and Obstacles
         monkey.isFlying = true;
 
@@ -181,64 +180,69 @@ public class PowerUpController : MonoBehaviour
         // Restore normal collisions between Monkey and Obstacles
         monkey.isFlying = false;
 
-
+        soundPlayer.PlayFlapWings();
         isPhaseThruActive = false;
     }
 
     void ActivateDecoyPower()
     {
-        // Check if the decoy power is already active
-        if (!isDecoyActive)
-        {
-            // Activate the decoy power
-            StartCoroutine(ActivateDecoy());
-        }
+        StartCoroutine(ActivateDecoy());
     }
 
    IEnumerator ActivateDecoy()
     {
-        isDecoyActive = true;
-
-        // Spawn a decoy at the monkey's current position
-        Vector3 decoyPosition = monkey.transform.position;
-        GameObject decoy = Instantiate(decoyPrefab, decoyPosition, Quaternion.identity);
-
-        // Set the lion's target to the decoy's position
-        lion.SetTarget(decoy.transform.position);
-
-        // Wait until the lion reaches the decoy's position (or close enough)
-        while (Vector3.Distance(lion.transform.position, decoy.transform.position) > 0.5f)
+        if (!isDecoyActive)
         {
-            yield return null;  // Wait until the lion reaches the decoy
+            soundPlayer.PlaySpawnMagic();
+            isDecoyActive = true;
+            decoyPosition = monkey.transform.position;
+            decoyMarker = Instantiate(decoyMarkerPrefab, decoyPosition, Quaternion.identity);
         }
+        else
+        {   
+            if (decoyMarker != null)
+            {
+                Destroy(decoyMarker);
+            }
+            GameObject decoy = Instantiate(decoyPrefab, decoyPosition, Quaternion.identity);
 
-        // Destroy the decoy once the lion reaches it
-        Destroy(decoy);
+            soundPlayer.PlayUseDecoy();
 
-        // Reset the lion's target back to the monkey
-        lion.ResetTargetToMonkey();
+            lion.SetTarget(decoy.transform.position);
 
-        isDecoyActive = false;
+            while (Vector3.Distance(lion.transform.position, decoy.transform.position) > 0.5f)
+            {
+                yield return null;  // Wait until the lion reaches the decoy
+            }
+
+            soundPlayer.PlayUseDecoy();
+            isDecoyActive = false;
+            Destroy(decoy);
+            lion.ResetTargetToMonkey();
+            decoySprite.enabled = false;
+            storedPowerUps.Remove(PowerUpType.Decoy);
+        }
+        
     }
 
     void ActivateTeleportPower()
     {
         if (!isTeleportSet)
         {
+            soundPlayer.PlaySpawnMagic();
             // Set the teleport location
             teleportLocation = SnapToGrid(monkey.transform.position);
             currentPortal = Instantiate(portalPrefab, teleportLocation, Quaternion.identity);
             isTeleportSet = true;
-            Debug.Log("Teleport location set at: " + teleportLocation);
         }
         else
         {
             // Teleport the monkey to the set location
+            soundPlayer.PlayUsePortal();
             monkey.transform.position = teleportLocation;
             monkey.UpdateTargetPosition(teleportLocation);
             isTeleportSet = false;
             Destroy(currentPortal);
-            Debug.Log("Teleported to: " + teleportLocation);
         }
     }
 

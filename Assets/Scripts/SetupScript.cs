@@ -5,6 +5,7 @@ using TMPro;
 public class SetupScript : MonoBehaviour
 {
     public static SetupScript instance; // Singleton reference
+    public GameObject AudioManager;
 
     public TextMeshProUGUI currentDifficultyText; 
 
@@ -12,8 +13,8 @@ public class SetupScript : MonoBehaviour
     public Button leftArrowButton;
     public Button rightArrowButton;
 
-    // Variable to hold the lion speed, default to Normal difficulty (1.75)
-    private float lionSpeed = 1.75f;
+    // Variable to hold the lion speed, default to Normal difficulty (1.85)
+    private float lionSpeed = 1.8f;
 
     void Awake()
     {
@@ -46,11 +47,19 @@ public class SetupScript : MonoBehaviour
     // Method to lower the difficulty
     public void LowerDifficulty()
     {
-        if (lionSpeed == 2f)
+        if (lionSpeed == 2.4f)
         {
-            lionSpeed = 1.75f;
+            lionSpeed = 2.2f;
         }
-        else if (lionSpeed == 1.75f)
+        else if (lionSpeed == 2.2f)
+        {
+            lionSpeed = 2f;
+        }
+        else if (lionSpeed == 2f)
+        {
+            lionSpeed = 1.8f;
+        }
+        else if (lionSpeed == 1.8f)
         {
             lionSpeed = 1.5f;
         }
@@ -64,11 +73,19 @@ public class SetupScript : MonoBehaviour
     {
         if (lionSpeed == 1.5f)
         {
-            lionSpeed = 1.75f;
+            lionSpeed = 1.8f;
         }
-        else if (lionSpeed == 1.75f)
+        else if (lionSpeed == 1.8f)
         {
             lionSpeed = 2f;
+        }
+        else if (lionSpeed == 2f)
+        {
+            lionSpeed = 2.2f;
+        }
+        else if (lionSpeed == 2.2f)
+        {
+            lionSpeed = 2.4f;
         }
 
         UpdateDifficultyText();
@@ -84,13 +101,21 @@ public class SetupScript : MonoBehaviour
         {
             currentDifficultyText.text = "Easy";
         }
-        else if (lionSpeed == 1.75f)
+        else if (lionSpeed == 1.8f)
         {
             currentDifficultyText.text = "Normal";
         }
         else if (lionSpeed == 2f)
         {
             currentDifficultyText.text = "Hard";
+        }
+        else if (lionSpeed == 2.2f)
+        {
+            currentDifficultyText.text = "Impossible";
+        }
+        else if (lionSpeed == 2.4f)
+        {
+            currentDifficultyText.text = "! Lion's Feast !";
         }
     }
 
@@ -101,7 +126,7 @@ public class SetupScript : MonoBehaviour
             leftArrowButton.interactable = lionSpeed > 1.5f;
 
         if (rightArrowButton != null) 
-            rightArrowButton.interactable = lionSpeed < 2f;
+            rightArrowButton.interactable = lionSpeed < 2.4f;
     }
 
     // Method to get the lion speed (for use elsewhere in the game)

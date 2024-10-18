@@ -8,9 +8,9 @@ public class PowerOrbSpawner : MonoBehaviour
     public Tilemap obstaclesTilemap;
     public GameObject powerOrbPrefab;
     public GameObject monkey;
-    public PowerUpController powerUpController;  // Reference to the PowerUpController
+    public PowerUpController powerUpController;
 
-    public float spawnInterval = 10f;
+    public float spawnInterval = 11.7f;
 
     void Start()
     {
@@ -28,7 +28,7 @@ public class PowerOrbSpawner : MonoBehaviour
 
     void SpawnPowerOrb()
     {
-        Vector3Int randomTilePos = GetRandomGroundTile();
+        Vector3Int randomTilePos = GetValidGroundTile(); // Use updated method to find a valid, unoccupied tile
 
         if (randomTilePos != Vector3Int.zero && powerOrbPrefab != null)
         {
@@ -37,23 +37,15 @@ public class PowerOrbSpawner : MonoBehaviour
             GameObject newPowerOrb = Instantiate(powerOrbPrefab, spawnPosition, Quaternion.identity);
 
             PowerOrbScript orbScript = newPowerOrb.GetComponent<PowerOrbScript>();
-            
-            // Now pass both the monkey and powerUpController to the Initialize method
             orbScript.Initialize(monkey, powerUpController);
-
-            Debug.Log("PowerOrb spawned at: " + spawnPosition);
-        }
-        else
-        {
-            Debug.LogWarning("No valid tile for PowerOrb or prefab missing.");
         }
     }
 
-    Vector3Int GetRandomGroundTile()
+    Vector3Int GetValidGroundTile()
     {
         BoundsInt bounds = groundTilemap.cellBounds;
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)  // Try up to 100 times to find an unoccupied tile
         {
             int randomX = Random.Range(bounds.xMin, bounds.xMax);
             int randomY = Random.Range(bounds.yMin, bounds.yMax);
@@ -61,10 +53,22 @@ public class PowerOrbSpawner : MonoBehaviour
 
             if (groundTilemap.HasTile(randomTilePos) && !obstaclesTilemap.HasTile(randomTilePos))
             {
-                return randomTilePos;
+                Vector3 worldPosition = groundTilemap.CellToWorld(randomTilePos) + new Vector3(0.5f, 0.5f, 0);
+
+                // Check if the tile is occupied by any object
+                if (!IsTileOccupied(worldPosition))
+                {
+                    return randomTilePos; // Return this tile if it's valid and unoccupied
+                }
             }
         }
 
-        return Vector3Int.zero;
+        return Vector3Int.zero; // Return invalid position if no valid tile found
+    }
+
+    bool IsTileOccupied(Vector3 worldPosition)
+    {
+        Collider2D collider = Physics2D.OverlapCircle(worldPosition, 0.1f);
+        return collider != null;
     }
 }

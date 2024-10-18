@@ -6,8 +6,9 @@ using UnityEngine.Tilemaps;
 public class MoveLionWithBFS : MonoBehaviour
 {
     public Transform monkey;
+    public SpriteRenderer lionArt;
     public Tilemap obstaclesTilemap;
-    public float normalMoveSpeed = 1f;
+    public float normalMoveSpeed = 0f;
     public float lineOfSightMoveSpeed;
     public float moveDistance = 1f;
     public LayerMask obstacleLayerMask;
@@ -16,10 +17,12 @@ public class MoveLionWithBFS : MonoBehaviour
     private Rigidbody2D rb;
     public Animator animator;
     private float currentMoveSpeed;
+    private bool isFirstTime = true;
 
     private Transform currentTarget;  // Keeps track of current target (monkey or decoy)
     private Vector2 lastValidMonkeyPosition; // Track the last valid monkey position
     private SetupScript setupScript;
+    public SoundPlayer soundPlayer;
 
     void Start()
     {
@@ -28,14 +31,7 @@ public class MoveLionWithBFS : MonoBehaviour
         animator = GetComponent<Animator>();
         
         // Access the lion speed from the SetupScript instance
-        if (SetupScript.instance != null)
-        {
-            normalMoveSpeed = SetupScript.instance.GetLionSpeed();
-        }
-
-        lineOfSightMoveSpeed = 2 * normalMoveSpeed;
-
-        currentMoveSpeed = normalMoveSpeed;
+        
 
         // Initially, the lion will target the monkey
         currentTarget = monkey;
@@ -89,6 +85,20 @@ public class MoveLionWithBFS : MonoBehaviour
 
     IEnumerator MoveLion()
     {
+        if (isFirstTime)
+        {
+            yield return new WaitForSeconds(5f);
+            lineOfSightMoveSpeed = 2 * normalMoveSpeed;
+            currentMoveSpeed = normalMoveSpeed;
+            lionArt.enabled = true;
+            soundPlayer.PlayRoar();
+            isFirstTime = false;
+            if (SetupScript.instance != null)
+            {
+                normalMoveSpeed = SetupScript.instance.GetLionSpeed();
+            }
+        }
+
         isMoving = true;
         animator.SetBool("isWalking", true);
 
@@ -185,18 +195,28 @@ public class MoveLionWithBFS : MonoBehaviour
         return obstaclesTilemap.HasTile(monkeyTilePos);
     }
 
-    // Added: Method to set the lion's target (for decoy logic)
     public void SetTarget(Vector3 target)
     {
-        // Create a temporary game object for the new target's position
         GameObject tempTarget = new GameObject("Temporary Target");
         tempTarget.transform.position = target;
+        
         currentTarget = tempTarget.transform;
+
+        StartCoroutine(DestroyTemporaryTarget(tempTarget));
     }
 
-    // Added: Method to reset the lion's target back to the monkey
     public void ResetTargetToMonkey()
     {
         currentTarget = monkey;
     }
+
+    private IEnumerator DestroyTemporaryTarget(GameObject tempTarget)
+    {
+        yield return new WaitForSeconds(15f);
+        if (tempTarget != null)
+        {
+            Destroy(tempTarget);
+        }
+    }
+
 }

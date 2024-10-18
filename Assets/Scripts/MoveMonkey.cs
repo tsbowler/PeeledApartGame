@@ -10,6 +10,7 @@ public class MoveMonkey : MonoBehaviour
     public bool isFlying = false;
     private float speedDefault;
     public Tilemap obstaclesTilemap;
+    public Tilemap groundTilemap;
     private Vector2 targetPosition;
     private Animator animator;
     private Rigidbody2D rb;
@@ -29,26 +30,26 @@ public class MoveMonkey : MonoBehaviour
         {
             Vector2 newPosition = targetPosition;
 
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
                 newPosition += Vector2.up * moveDistance;
             }
-            else if (Input.GetKey(KeyCode.S))
+            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
                 newPosition += Vector2.down * moveDistance;
             }
-            else if (Input.GetKey(KeyCode.A))
+            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
                 newPosition += Vector2.left * moveDistance;
                 transform.localScale = new Vector3(-1, 1, 1);
             }
-            else if (Input.GetKey(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
                 newPosition += Vector2.right * moveDistance;
                 transform.localScale = new Vector3(1, 1, 1);
             }
 
-            if (!IsObstacleAtPosition(newPosition) || isFlying)
+            if ((!IsObstacleAtPosition(newPosition) || isFlying) && IsGroundAtPosition(newPosition))
             {
                 targetPosition = newPosition;
             }
@@ -77,6 +78,13 @@ public class MoveMonkey : MonoBehaviour
     {
         Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);
         TileBase tile = obstaclesTilemap.GetTile(cellPosition);
+        return tile != null;  
+    }
+
+    bool IsGroundAtPosition(Vector2 position)
+    {
+        Vector3Int cellPosition = groundTilemap.WorldToCell(position);
+        TileBase tile = groundTilemap.GetTile(cellPosition);
         return tile != null;  
     }
 

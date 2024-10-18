@@ -4,13 +4,22 @@ public class BananaScript : MonoBehaviour
 {
     private GameObject monkey;  // Reference to the monkey
     private GeneralLogic generalLogic;  // Reference to GeneralLogic
+    private SoundPlayer soundPlayer;  // Reference to SoundPlayer (shared across scene)
 
     private float lifespan = 20f;  // Time before the banana self-destructs
 
     void Start()
     {
-        // Start the countdown to destroy the banana after its lifespan
         Invoke("DestroyBanana", lifespan);
+        
+        // Find the SoundPlayer in the scene
+        soundPlayer = FindObjectOfType<SoundPlayer>();
+        
+        // Check if SoundPlayer was found
+        if (soundPlayer == null)
+        {
+            Debug.LogError("SoundPlayer not found in the scene!");
+        }
     }
 
     void Update()
@@ -31,6 +40,9 @@ public class BananaScript : MonoBehaviour
 
     void CollectBanana()
     {
+        // Play a random sound effect
+        PlayRandomSound();
+
         // Add to score in GeneralLogic
         if (generalLogic != null)
         {
@@ -45,5 +57,26 @@ public class BananaScript : MonoBehaviour
     {
         // If the banana is not collected in time, destroy it
         Destroy(gameObject);
+    }
+
+    void PlayRandomSound()
+    {
+        // Ensure soundPlayer is assigned
+        if (soundPlayer != null)
+        {
+            int randomSound = Random.Range(0, 3);  // Generates a random number between 0 and 2
+            switch (randomSound)
+            {
+                case 0:
+                    soundPlayer.PlayChomp();
+                    break;
+                case 1:
+                    soundPlayer.PlayMunch();
+                    break;
+                case 2:
+                    soundPlayer.PlayGulp();
+                    break;
+            }
+        }
     }
 }

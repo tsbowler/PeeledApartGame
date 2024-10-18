@@ -8,6 +8,9 @@ public class AudioManager : MonoBehaviour
     // AudioSource components for different music
     public AudioSource menuMusicSource;
     public AudioSource gameplayMusicSource;
+    public AudioSource hardImpMusicSource;
+
+    private SetupScript setupScript;
 
     private void Awake()
     {
@@ -25,6 +28,9 @@ public class AudioManager : MonoBehaviour
 
         // Register to listen for scene changes
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        // Get the SetupScript reference to access lionSpeed
+        setupScript = SetupScript.instance;  // Assuming SetupScript is a Singleton
     }
 
     private void Start()
@@ -44,7 +50,7 @@ public class AudioManager : MonoBehaviour
         // Play gameplay music if it's the Gameplay scene
         else if (scene.name == "Gameplay")
         {
-            PlayGameplayMusic();
+            PlayGameplayMusicBasedOnDifficulty();
         }
     }
 
@@ -56,19 +62,38 @@ public class AudioManager : MonoBehaviour
             menuMusicSource.Play();
         }
 
-        // Stop gameplay music if it was playing
-        if (gameplayMusicSource.isPlaying)
-        {
-            gameplayMusicSource.Stop();
-        }
+        // Stop gameplay and hard/imp music if they were playing
+        gameplayMusicSource.Stop();
+        hardImpMusicSource.Stop();
     }
 
-    // Play the gameplay music and stop other music
-    private void PlayGameplayMusic()
+    // Play the correct gameplay music based on the lion speed (difficulty)
+    private void PlayGameplayMusicBasedOnDifficulty()
     {
-        if (!gameplayMusicSource.isPlaying)
+        // Get the current lion speed from SetupScript (difficulty)
+        float lionSpeed = setupScript.GetLionSpeed();
+
+        // If difficulty is Hard or Impossible (lionSpeed >= 2.0), play hardImpMusicSource
+        if (lionSpeed >= 2.0f)
         {
-            gameplayMusicSource.Play();
+            if (!hardImpMusicSource.isPlaying)
+            {
+                hardImpMusicSource.Play();
+            }
+
+            // Stop other music sources
+            gameplayMusicSource.Stop();
+        }
+        // Otherwise, play the regular gameplay music
+        else
+        {
+            if (!gameplayMusicSource.isPlaying)
+            {
+                gameplayMusicSource.Play();
+            }
+
+            // Stop hard/imp music if it was playing
+            hardImpMusicSource.Stop();
         }
 
         // Stop menu music if it was playing
@@ -82,5 +107,20 @@ public class AudioManager : MonoBehaviour
     {
         // Unsubscribe from the sceneLoaded event when this object is destroyed
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // Methods to mute and unmute all music
+    public void MusicOff()
+    {
+        menuMusicSource.mute = true;
+        gameplayMusicSource.mute = true;
+        hardImpMusicSource.mute = true;
+    }
+
+    public void MusicOn()
+    {
+        menuMusicSource.mute = false;
+        gameplayMusicSource.mute = false;
+        hardImpMusicSource.mute = false;
     }
 }
