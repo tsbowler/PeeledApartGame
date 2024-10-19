@@ -59,9 +59,15 @@ public class SoundPlayer : MonoBehaviour
     public void PlayUseDecoy()
     {
         if(!isUseDecoyPlaying)
+        {
             useDecoy.Play();
+            isUseDecoyPlaying = true;
+        } 
         else
+        {
             useDecoy.Stop();
+            isUseDecoyPlaying = false;
+        }
     }
     public void PlayUsePortal()
     {
@@ -70,9 +76,15 @@ public class SoundPlayer : MonoBehaviour
     public void PlayFlapWings()
     {
         if(!isFlapWingsPlaying)
+        {
             flapWings.Play();
+            isFlapWingsPlaying = true;
+        }
         else
+        {
             flapWings.Stop();
+            isFlapWingsPlaying = false;
+        }
     }
 
     public void PlayLoser()

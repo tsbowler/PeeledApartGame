@@ -9,7 +9,7 @@ public class MoveLionWithBFS : MonoBehaviour
     public SpriteRenderer lionArt;
     public Tilemap obstaclesTilemap;
     public float normalMoveSpeed = 0f;
-    public float lineOfSightMoveSpeed;
+    public float lineOfSightMoveSpeed = 0f;
     public float moveDistance = 1f;
     public LayerMask obstacleLayerMask;
     private Vector2 targetPosition;
@@ -29,15 +29,14 @@ public class MoveLionWithBFS : MonoBehaviour
         targetPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        
-        // Access the lion speed from the SetupScript instance
-        
 
         // Initially, the lion will target the monkey
         currentTarget = monkey;
 
         // Initialize the last valid position to the monkey's starting position
         lastValidMonkeyPosition = monkey.position;
+
+        StartCoroutine(Entrance());
     }
 
     void Update()
@@ -69,10 +68,12 @@ public class MoveLionWithBFS : MonoBehaviour
             {
                 targetPosition = path[0];
             }
-
+        if (!isFirstTime)
+        {
             StartCoroutine(MoveLion());
         }
-
+        }
+        
         if(moveDistance == 0)
         {
             animator.SetBool("isFrozen", true);
@@ -81,24 +82,35 @@ public class MoveLionWithBFS : MonoBehaviour
         {
             animator.SetBool("isFrozen", false);
         }
+        
+    }
+
+    IEnumerator Entrance()
+    {
+        // Wait for 5 seconds before the lion does anything
+        yield return new WaitForSeconds(5f);
+        
+        // Enable the lion and play the roar sound
+        lionArt.enabled = true;
+        soundPlayer.PlayRoar();
+
+        // Wait until the roar finishes playing before moving the lion
+        yield return new WaitForSeconds(1f); 
+
+        isFirstTime = false;
+
+        // Now set the lion speed and movement
+        if (SetupScript.instance != null)
+        {
+            normalMoveSpeed = SetupScript.instance.GetLionSpeed();
+        }
+
+        lineOfSightMoveSpeed = 2 * normalMoveSpeed;
+        currentMoveSpeed = normalMoveSpeed;
     }
 
     IEnumerator MoveLion()
     {
-        if (isFirstTime)
-        {
-            yield return new WaitForSeconds(5f);
-            lineOfSightMoveSpeed = 2 * normalMoveSpeed;
-            currentMoveSpeed = normalMoveSpeed;
-            lionArt.enabled = true;
-            soundPlayer.PlayRoar();
-            isFirstTime = false;
-            if (SetupScript.instance != null)
-            {
-                normalMoveSpeed = SetupScript.instance.GetLionSpeed();
-            }
-        }
-
         isMoving = true;
         animator.SetBool("isWalking", true);
 
@@ -121,6 +133,7 @@ public class MoveLionWithBFS : MonoBehaviour
         animator.SetBool("isWalking", false);
         isMoving = false;
     }
+
 
     bool HasLineOfSight(Vector2 targetPosition)
     {
