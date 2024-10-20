@@ -5539,7 +5539,7 @@ MonoBehaviour:
   powerOrbPrefab: {fileID: 3335046996998668017, guid: f84757e0f291bf44ba988e9ccc4ca881, type: 3}
   monkey: {fileID: 932014498}
   powerUpController: {fileID: 932014505}
-  spawnInterval: 11.7
+  spawnInterval: 9.7
 --- !u!4 &1222612490
 Transform:
   m_ObjectHideFlags: 0

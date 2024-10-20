@@ -13,7 +13,7 @@ public class GameEnder : MonoBehaviour
 
     public void OnReplayButtonClick()
     {
-        SceneManager.LoadScene("Gameplay");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void Celebrate()

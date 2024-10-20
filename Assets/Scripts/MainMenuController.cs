@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -15,10 +16,13 @@ public class MainMenuController : MonoBehaviour
     public GameObject howToPlayPanel;
     public GameObject quitConfirmationPanel;
 
-    void Start()
-    {
-        //AudioManager.instance.PlayMenuMusic();
+    public TextMeshProUGUI mapText; 
+    public Button leftMap;
+    public Button rightMap;
+    private int mapChoice = 1;
 
+    void Start()
+    {  
         // Hook up button click events
         playButton.onClick.AddListener(OnPlayButtonClick);
         gameSetupButton.onClick.AddListener(OnGameSetupButtonClick);
@@ -34,14 +38,25 @@ public class MainMenuController : MonoBehaviour
     // Play button logic
     void OnPlayButtonClick()
     {
-        // Load the Gameplay scene
-        SceneManager.LoadScene("Gameplay");
+        if (mapChoice == 1)
+        {
+            SceneManager.LoadScene("Map1");
+        }
+        else if (mapChoice == 2)
+        {
+            SceneManager.LoadScene("Map2");
+        }
+        else 
+        {
+            SceneManager.LoadScene("Map3");
+        }
     }
 
     // Game Setup button logic
     void OnGameSetupButtonClick()
     {
         // Show the Game Setup panel and hide the main menu buttons
+        UpdateButtonInteractivity();
         gameSetupPanel.SetActive(true);
     }
 
@@ -72,5 +87,39 @@ public class MainMenuController : MonoBehaviour
         gameSetupPanel.SetActive(false);
         howToPlayPanel.SetActive(false);
         quitConfirmationPanel.SetActive(false);
+    }
+
+    public void increaseMap()
+    {
+        mapChoice++;
+        UpdateButtonInteractivity();
+    }
+
+    public void decreaseMap()
+    {
+        mapChoice--;
+        UpdateButtonInteractivity();
+    }
+
+    private void UpdateButtonInteractivity()
+    {
+        if (leftMap!= null) 
+            leftMap.interactable = mapChoice > 1;
+
+        if (rightMap != null) 
+            rightMap.interactable = mapChoice < 3;
+
+        if (mapChoice == 1)
+        {
+            mapText.text = "Classic Jungle";
+        }
+        else if (mapChoice == 2)
+        {
+            mapText.text = "The Cat Cave";
+        }
+        else if (mapChoice == 3)
+        {
+            mapText.text = "The Potasseum";
+        }
     }
 }

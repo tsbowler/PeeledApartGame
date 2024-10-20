@@ -31,7 +31,7 @@ public class GeneralLogic : MonoBehaviour
 
         timeText.text = string.Format("Time: {0:0}:{1:00}", minutes, seconds);
 
-        if ((elapsedTime <= 0 || Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && !isGameOver)
+        if ((elapsedTime <= 0 || ((Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && elapsedTime<293)) && !isGameOver)
         {
             soundPlayer.PlayChomp();
             soundPlayer.PlayLoser();
