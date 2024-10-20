@@ -6,7 +6,7 @@ public class BananaScript : MonoBehaviour
     private GeneralLogic generalLogic;  // Reference to GeneralLogic
     private SoundPlayer soundPlayer;  // Reference to SoundPlayer (shared across scene)
 
-    private float lifespan = 20f;  // Time before the banana self-destructs
+    private float lifespan = 30f;  // Time before the banana self-destructs
 
     void Start()
     {
@@ -14,12 +14,7 @@ public class BananaScript : MonoBehaviour
         
         // Find the SoundPlayer in the scene
         soundPlayer = FindObjectOfType<SoundPlayer>();
-        
-        // Check if SoundPlayer was found
-        if (soundPlayer == null)
-        {
-            Debug.LogError("SoundPlayer not found in the scene!");
-        }
+        soundPlayer.PlayBanana();
     }
 
     void Update()

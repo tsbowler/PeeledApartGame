@@ -10,7 +10,7 @@ public class PowerOrbSpawner : MonoBehaviour
     public GameObject monkey;
     public PowerUpController powerUpController;
 
-    public float spawnInterval = 11.7f;
+    public float spawnInterval = 1f;
 
     void Start()
     {

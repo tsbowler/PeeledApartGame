@@ -50,7 +50,7 @@ public class PowerUpController : MonoBehaviour
             storedPowerUps.Remove(PowerUpType.Freeze);  // Remove the power after using
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost) && !isPhaseThruActive)
+        if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost) && !isPhaseThruActive && !isSpeedBoostActive)
         {
             ActivateSpeedBoostPower();
             speedSprite.enabled = false;
@@ -72,7 +72,7 @@ public class PowerUpController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha5) && storedPowerUps.Contains(PowerUpType.PhaseThru) && !isSpeedBoostActive)
+        if (Input.GetKeyDown(KeyCode.Alpha5) && storedPowerUps.Contains(PowerUpType.PhaseThru) && !isSpeedBoostActive && !isPhaseThruActive)
         {
             ActivatePhaseThruPower();
             wingsSprite.enabled = false;
@@ -208,7 +208,8 @@ public class PowerUpController : MonoBehaviour
 
             soundPlayer.PlayUseDecoy();
 
-            lion.SetTarget(decoy.transform.position);
+            if (lion.gameObject.activeInHierarchy)
+                lion.SetTarget(decoy.transform.position);
 
             while (Vector3.Distance(lion.transform.position, decoy.transform.position) > 0.5f)
             {

@@ -4,7 +4,8 @@ public class PowerOrbScript : MonoBehaviour
 {
     private GameObject monkey;  // Reference to the monkey
     private PowerUpController powerUpController;  // Reference to PowerUpController
-    private float lifespan = 20f;  // Time before the Power Orb self-destructs
+    private float lifespan = 30f;  // Time before the Power Orb self-destructs
+    private SoundPlayer soundPlayer;
 
     // Distance threshold for collecting the power orb
     private float collectionRadius = 0.5f;
@@ -13,6 +14,8 @@ public class PowerOrbScript : MonoBehaviour
     {
         // Start the countdown to destroy the Power Orb after its lifespan
         Invoke("DestroyPowerOrb", lifespan);
+        soundPlayer = FindObjectOfType<SoundPlayer>();
+        soundPlayer.PlayOrb();
     }
 
     void Update()

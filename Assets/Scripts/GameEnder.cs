@@ -23,6 +23,20 @@ public class GameEnder : MonoBehaviour
 
     public void OnReturnButtonClick()
     {
+        GameObject setupScriptObject = SetupScript.instance.gameObject;
+
+        if (setupScriptObject != null)
+        {
+            Destroy(setupScriptObject);
+        }
+
+        GameObject audioObject = AudioManager.instance.gameObject;
+
+        if (audioObject != null)
+        {
+            Destroy(audioObject);
+        }
+
         SceneManager.LoadScene("MainMenu");
     }
 

@@ -1,10 +1,10 @@
 using UnityEngine;
-using TMPro;  // Add this to use TextMeshProUGUI
+using TMPro;
 
 public class GeneralLogic : MonoBehaviour
 {
-    public TextMeshProUGUI scoreText;    // Reference to the TextMeshProUGUI element for score
-    public TextMeshProUGUI timeText;     // Reference to the TextMeshProUGUI element for time
+    public TextMeshProUGUI scoreText;    
+    public TextMeshProUGUI timeText;    
     public GameObject monkey;
     public GameObject lion;
     public SoundPlayer soundPlayer;
@@ -31,8 +31,10 @@ public class GeneralLogic : MonoBehaviour
 
         timeText.text = string.Format("Time: {0:0}:{1:00}", minutes, seconds);
 
-        if ((elapsedTime <= 0 || Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.1f) && !isGameOver)
+        if ((elapsedTime <= 0 || Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && !isGameOver)
         {
+            soundPlayer.PlayChomp();
+            soundPlayer.PlayLoser();
             losePanel.SetActive(true);
             monkey.SetActive(false);
             isGameOver = true;

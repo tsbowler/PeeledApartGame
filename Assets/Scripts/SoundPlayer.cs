@@ -17,7 +17,8 @@ public class SoundPlayer : MonoBehaviour
     public AudioSource flapWings;
     public AudioSource loser;
     public AudioSource winner;
-    public AudioSource impWin;
+    public AudioSource bananaSound;
+    public AudioSource orbSound;
 
     private bool isFlapWingsPlaying = false;
     private bool isUseDecoyPlaying = false;
@@ -95,8 +96,13 @@ public class SoundPlayer : MonoBehaviour
     {
         winner.Play();
     }
-    public void PlayImpWin()
+
+    public void PlayBanana()
     {
-        impWin.Play();
+        bananaSound.Play();
+    }
+    public void PlayOrb()
+    {
+        orbSound.Play();
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2036323451770443466}
   - component: {fileID: 9016337839934909331}
   - component: {fileID: 4803310643244628448}
+  - component: {fileID: 6214462035509746961}
   m_Layer: 0
   m_Name: Banana
   m_TagString: Untagged
@@ -98,7 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac48fc077244444bae3710179167798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chomp: {fileID: 0}
 --- !u!58 &4803310643244628448
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -115,3 +115,24 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.33333334
+--- !u!95 &6214462035509746961
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5763994819860948854}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 053bcbf5733ab7d4eaf20cda5c2679bc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

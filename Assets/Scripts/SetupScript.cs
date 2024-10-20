@@ -16,18 +16,19 @@ public class SetupScript : MonoBehaviour
     // Variable to hold the lion speed, default to Normal difficulty (1.85)
     private float lionSpeed = 1.8f;
 
-    void Awake()
+        void Awake()
     {
         if (instance == null)
         {
             instance = this; // Set the singleton instance
             DontDestroyOnLoad(gameObject); // Make this object persistent
         }
-        else
+        else if (instance != this)
         {
             Destroy(gameObject); // Destroy duplicate instances
         }
     }
+
 
     void Start()
     {
@@ -115,7 +116,7 @@ public class SetupScript : MonoBehaviour
         }
         else if (lionSpeed == 2.4f)
         {
-            currentDifficultyText.text = "! Lion's Feast !";
+            currentDifficultyText.text = "Lion's Feast";
         }
     }
 
