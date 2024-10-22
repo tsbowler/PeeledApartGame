@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class PowerUpController : MonoBehaviour
 {
     public MoveLionWithBFS lion;  
     public MoveMonkey monkey;     
     public SoundPlayer soundPlayer;
+    public GeneralLogic generalLogic;
+    public Tilemap obstaclesTilemap;
 
     public SpriteRenderer freezeSprite;
     public SpriteRenderer speedSprite;
@@ -129,9 +132,11 @@ public class PowerUpController : MonoBehaviour
         soundPlayer.PlayFreeze();
         lion.moveDistance = 0f;  // Freeze lion movement
         lion.animator.SetBool("isWalking", false);  // Stop walking animation
+        generalLogic.canMonkeyDie = false;
 
         yield return new WaitForSeconds(freezeDuration);  // Wait for freeze duration
 
+        generalLogic.canMonkeyDie = true;
         lion.moveDistance = 1f;  // Restore lion's normal movement speed
         lion.animator.SetBool("isWalking", true);
 
@@ -156,7 +161,7 @@ public class PowerUpController : MonoBehaviour
         yield return new WaitForSeconds(boostDuration);  
 
         monkey.moveSpeed = originalSpeed;  
-
+        soundPlayer.PlayRunning();
         isSpeedBoostActive = false;
     }
 
@@ -174,12 +179,13 @@ public class PowerUpController : MonoBehaviour
         soundPlayer.PlayFlapWings();
         // Ignore collisions between Monkey and Obstacles
         monkey.isFlying = true;
+        generalLogic.canMonkeyDie = false;
 
         yield return new WaitForSeconds(phaseDuration);  // Wait for the phase-thru duration
 
         // Restore normal collisions between Monkey and Obstacles
         monkey.isFlying = false;
-
+        generalLogic.canMonkeyDie = true;
         soundPlayer.PlayFlapWings();
         isPhaseThruActive = false;
     }
@@ -193,10 +199,16 @@ public class PowerUpController : MonoBehaviour
     {
         if (!isDecoyActive)
         {
+            decoyPosition = SnapToGrid(monkey.transform.position);
+            Vector2 decoyPosition2D = new Vector2(decoyPosition.x, decoyPosition.y);
+            if (IsObstacleAtPosition(decoyPosition2D))
+            {
+                yield break;
+            }
             soundPlayer.PlaySpawnMagic();
             isDecoyActive = true;
-            decoyPosition = monkey.transform.position;
             decoyMarker = Instantiate(decoyMarkerPrefab, decoyPosition, Quaternion.identity);
+            decoyPosition = monkey.transform.position;
         }
         else
         {   
@@ -256,5 +268,12 @@ public class PowerUpController : MonoBehaviour
         float snappedY = Mathf.Round((originalPosition.y - offset) / snapValue) * snapValue + offset;
 
         return new Vector3(snappedX, snappedY, originalPosition.z);
+    }
+
+    bool IsObstacleAtPosition(Vector2 position)
+    {
+        Vector3Int cellPosition = obstaclesTilemap.WorldToCell(position);
+        TileBase tile = obstaclesTilemap.GetTile(cellPosition);
+        return tile != null;
     }
 }

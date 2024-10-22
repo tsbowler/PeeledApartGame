@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
@@ -9,6 +11,8 @@ public class AudioManager : MonoBehaviour
     public AudioSource menuMusicSource;
     public AudioSource gameplayMusicSource;
     public AudioSource hardImpMusicSource;
+    public AudioSource menuHoverSound;
+    public AudioSource menuClickSound;
 
     private SetupScript setupScript;
 
@@ -48,7 +52,7 @@ public class AudioManager : MonoBehaviour
             PlayMenuMusic();
         }
         // Play gameplay music if it's the Gameplay scene
-        else if (scene.name == "Gameplay")
+        else
         {
             PlayGameplayMusicBasedOnDifficulty();
         }
@@ -122,5 +126,30 @@ public class AudioManager : MonoBehaviour
         menuMusicSource.mute = false;
         gameplayMusicSource.mute = false;
         hardImpMusicSource.mute = false;
+    }
+
+    public void AssignButtonSounds(Button button)
+    {
+        button.onClick.AddListener(() => menuClick());
+        EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>();
+        
+        if (trigger == null)
+        {
+            trigger = button.gameObject.AddComponent<EventTrigger>();
+        }
+
+        EventTrigger.Entry entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+        entry.callback.AddListener((eventData) => menuHover());
+        trigger.triggers.Add(entry);
+    }
+
+    public void menuHover()
+    {
+        menuHoverSound.Play();
+    }
+
+    public void menuClick()
+    {
+        menuClickSound.Play();
     }
 }

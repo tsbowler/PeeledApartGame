@@ -22,6 +22,7 @@ public class SoundPlayer : MonoBehaviour
 
     private bool isFlapWingsPlaying = false;
     private bool isUseDecoyPlaying = false;
+    private bool isRunningPlaying = false;
     
     public void PlayChomp()
     {
@@ -51,7 +52,16 @@ public class SoundPlayer : MonoBehaviour
     }
     public void PlayRunning()
     {
-        running.Play();
+        if(!isRunningPlaying)
+        {
+            running.Play();
+            isRunningPlaying = true;
+        } 
+        else
+        {
+            running.Stop();
+            isRunningPlaying = false;
+        }
     }
     public void PlaySpawnMagic()
     {

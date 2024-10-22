@@ -15,6 +15,7 @@ public class GeneralLogic : MonoBehaviour
     private int score = 0;               // Tracks the player's score
     private float elapsedTime = 300f;      // Tracks the elapsed time since the start of the game
     private bool isGameOver = false;
+    public bool canMonkeyDie = true;
 
     void Start()
     {
@@ -31,7 +32,7 @@ public class GeneralLogic : MonoBehaviour
 
         timeText.text = string.Format("Time: {0:0}:{1:00}", minutes, seconds);
 
-        if ((elapsedTime <= 0 || ((Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && elapsedTime<293)) && !isGameOver)
+        if ((elapsedTime <= 0 || ((Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && elapsedTime<293)) && !isGameOver && canMonkeyDie)
         {
             soundPlayer.PlayChomp();
             soundPlayer.PlayLoser();

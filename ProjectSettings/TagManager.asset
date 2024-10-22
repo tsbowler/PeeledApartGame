@@ -50,6 +50,9 @@ TagManager:
   - name: Powers
     uniqueID: 1222531889
     locked: 0
+  - name: Collectibles
+    uniqueID: 3712284887
+    locked: 0
   - name: Characters
     uniqueID: 3299480259
     locked: 0
