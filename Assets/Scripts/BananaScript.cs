@@ -1,30 +1,30 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BananaScript : MonoBehaviour
 {
-    private GameObject monkey;  // Reference to the monkey
-    private GeneralLogic generalLogic;  // Reference to GeneralLogic
-    private SoundPlayer soundPlayer;  // Reference to SoundPlayer (shared across scene)
+    private GameObject monkey;
+    private GeneralLogic generalLogic;
+    private SoundPlayer soundPlayer;
 
-    private float lifespan = 30f;  // Time before the banana self-destructs
-    private Material bananaMaterial;  // Reference to the banana's material
-    private bool isFading = false;  // To prevent multiple fade coroutines from starting
+    private float lifespan = 30f; // Time before the banana self-destructs
+    private SpriteRenderer bananaRenderer; // Reference to the SpriteRenderer
+    private bool isFading = false; // To prevent multiple fade coroutines from starting
 
     void Start()
     {
-        // Get the material from the SpriteRenderer
-        bananaMaterial = GetComponent<SpriteRenderer>().material;
+        // Get the SpriteRenderer component
+        bananaRenderer = GetComponent<SpriteRenderer>();
 
+        // Destroy the banana after its lifespan
         Invoke("DestroyBanana", lifespan);
 
         // Find the SoundPlayer in the scene
         soundPlayer = FindObjectOfType<SoundPlayer>();
         soundPlayer.PlayBanana();
 
-        // Start the fading coroutine when there's 6 seconds left
-        Invoke("StartFading", lifespan - 6f);
+        // Start fading the banana when there's 6 seconds left
+        Invoke("StartFading", lifespan - 5.5f);
     }
 
     void Update()
@@ -45,7 +45,6 @@ public class BananaScript : MonoBehaviour
 
     void CollectBanana()
     {
-        // Play a random sound effect
         PlayRandomSound();
 
         // Add to score in GeneralLogic
@@ -60,16 +59,14 @@ public class BananaScript : MonoBehaviour
 
     void DestroyBanana()
     {
-        // If the banana is not collected in time, destroy it
         Destroy(gameObject);
     }
 
     void PlayRandomSound()
     {
-        // Ensure soundPlayer is assigned
         if (soundPlayer != null)
         {
-            int randomSound = Random.Range(0, 3);  // Generates a random number between 0 and 2
+            int randomSound = Random.Range(0, 3);
             switch (randomSound)
             {
                 case 0:
@@ -98,19 +95,18 @@ public class BananaScript : MonoBehaviour
     // Coroutine to handle the fading effect
     IEnumerator FadeOutAndIn()
     {
-        while (lifespan > 0 && lifespan <= 6f)
+        float fadeDuration = 0.5f;
+        while (true) // Continue fading in and out until the banana is destroyed
         {
-            // Fade out
-            yield return StartCoroutine(FadeTo(0f, 0.5f));  // Fade to 0 alpha over 0.5 seconds
-            // Fade in
-            yield return StartCoroutine(FadeTo(1f, 0.5f));  // Fade to full alpha over 0.5 seconds
+            yield return StartCoroutine(FadeTo(0f, fadeDuration)); // Fade out
+            yield return StartCoroutine(FadeTo(1f, fadeDuration)); // Fade in
         }
     }
 
-    // Coroutine to smoothly change the alpha value of the material
+    // Coroutine to smoothly change the alpha value of the SpriteRenderer's color
     IEnumerator FadeTo(float targetAlpha, float duration)
     {
-        Color color = bananaMaterial.color;
+        Color color = bananaRenderer.color;
         float startAlpha = color.a;
         float time = 0;
 
@@ -119,12 +115,12 @@ public class BananaScript : MonoBehaviour
             time += Time.deltaTime;
             float t = time / duration;
             color.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-            bananaMaterial.color = color;
+            bananaRenderer.color = color; // Apply the color change to the SpriteRenderer
             yield return null;
         }
 
         // Ensure the final alpha is set precisely
         color.a = targetAlpha;
-        bananaMaterial.color = color;
+        bananaRenderer.color = color;
     }
 }
