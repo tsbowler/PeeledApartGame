@@ -45,13 +45,12 @@ public class MoveLionWithBFS : MonoBehaviour
         if (HasLineOfSight(currentTarget.position))
         {
             currentMoveSpeed = lineOfSightMoveSpeed * moveDistance;
-            animator.speed = 2f;
         }
         else
         {
             currentMoveSpeed = normalMoveSpeed * moveDistance;
-            animator.speed = 1f;
         }
+        animator.speed = currentMoveSpeed/4;
 
         if (!isMoving)
         {
