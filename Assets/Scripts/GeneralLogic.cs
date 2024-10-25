@@ -12,26 +12,21 @@ public class GeneralLogic : MonoBehaviour
     public GameObject losePanel;
 
     private float winScore = 10;
-    private int score = 0;               // Tracks the player's score
-    private float elapsedTime = 300f;      // Tracks the elapsed time since the start of the game
+    private int score = 0;           
+    private float elapsedTime = 300f;      
     private bool isGameOver = false;
     public bool canMonkeyDie = true;
 
-    void Start()
-    {
-        //AudioManager.instance.PlayBackgroundMusic();
-    }
-
     void Update()
     {
-        // Update the elapsed time
         elapsedTime -= Time.deltaTime;
 
-        int minutes = Mathf.FloorToInt(elapsedTime / 60);  // Calculate total minutes
-        int seconds = Mathf.FloorToInt(elapsedTime % 60);  // Calculate remaining seconds
+        int minutes = Mathf.FloorToInt(elapsedTime / 60);  
+        int seconds = Mathf.FloorToInt(elapsedTime % 60);  
 
         timeText.text = string.Format("Time: {0:0}:{1:00}", minutes, seconds);
 
+     // player loses if times is up, or lion reaches them, unless monkey is currently invulnerable
         if ((elapsedTime <= 0 || ((Vector3.Distance(lion.transform.position, monkey.transform.position) < 0.3f) && elapsedTime<293)) && !isGameOver && canMonkeyDie)
         {
             soundPlayer.PlayChomp();
@@ -42,7 +37,7 @@ public class GeneralLogic : MonoBehaviour
         }
     }
 
-    // Method to increase the score when a banana is collected
+    // increment score and activate win screen on winning score
     public void AddScore(int amount)
     {
         score += amount;

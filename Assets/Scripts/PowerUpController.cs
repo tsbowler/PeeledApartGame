@@ -44,13 +44,13 @@ public class PowerUpController : MonoBehaviour
         obstacleLayer = LayerMask.NameToLayer("Obstacle");
     }
 
-    void Update()
+    void Update() // detect user input to use available powerups when valid
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) && storedPowerUps.Contains(PowerUpType.Freeze))
         {
             ActivateFreezePower();
             freezeSprite.enabled = false;
-            storedPowerUps.Remove(PowerUpType.Freeze);  // Remove the power after using
+            storedPowerUps.Remove(PowerUpType.Freeze);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2) && storedPowerUps.Contains(PowerUpType.SpeedBoost) && !isPhaseThruActive && !isSpeedBoostActive)
@@ -84,13 +84,13 @@ public class PowerUpController : MonoBehaviour
     
     }
 
+    // choose random power to store and display
     public void UnlockRandomPower()
     {
         soundPlayer.PlayPowerup();
 
         List<PowerUpType> availablePowerUps = new List<PowerUpType> { PowerUpType.Freeze, PowerUpType.SpeedBoost, PowerUpType.Decoy, PowerUpType.Teleport, PowerUpType.PhaseThru };
 
-        // Remove powers already stored
         availablePowerUps.RemoveAll(p => storedPowerUps.Contains(p));
 
         if (availablePowerUps.Count > 0)
@@ -122,7 +122,7 @@ public class PowerUpController : MonoBehaviour
     {
         if (!isFrozen)
         {
-            StartCoroutine(FreezeLion(3f));  // Freeze lion for 3 seconds
+            StartCoroutine(FreezeLion(3f));  // stop lion movement for x seconds
         }
     }
 
@@ -130,14 +130,14 @@ public class PowerUpController : MonoBehaviour
     {
         isFrozen = true;
         soundPlayer.PlayFreeze();
-        lion.moveDistance = 0f;  // Freeze lion movement
-        lion.animator.SetBool("isWalking", false);  // Stop walking animation
+        lion.moveDistance = 0f;  
+        lion.animator.SetBool("isWalking", false);  
         generalLogic.canMonkeyDie = false;
 
-        yield return new WaitForSeconds(freezeDuration);  // Wait for freeze duration
+        yield return new WaitForSeconds(freezeDuration);  
 
         generalLogic.canMonkeyDie = true;
-        lion.moveDistance = 1f;  // Restore lion's normal movement speed
+        lion.moveDistance = 1f;
         lion.animator.SetBool("isWalking", true);
 
         isFrozen = false;
@@ -147,7 +147,7 @@ public class PowerUpController : MonoBehaviour
     {
         if (!isSpeedBoostActive)
         {
-            StartCoroutine(SpeedBoost(3f, 4f));  // Boost monkey's speed to 4 for 3 seconds
+            StartCoroutine(SpeedBoost(3f, 4f));  // for 3 seconds, boost monkey speed to 4
         }
     }
 
@@ -169,7 +169,7 @@ public class PowerUpController : MonoBehaviour
     {
         if (!isPhaseThruActive)
         {
-            StartCoroutine(PhaseThru(7f));  // Allow monkey to phase through obstacles for x seconds
+            StartCoroutine(PhaseThru(7f));  // allow monkey to phase through obstacles and lion for x seconds
         }
     }
 
@@ -177,13 +177,11 @@ public class PowerUpController : MonoBehaviour
     {
         isPhaseThruActive = true;
         soundPlayer.PlayFlapWings();
-        // Ignore collisions between Monkey and Obstacles
         monkey.isFlying = true;
         generalLogic.canMonkeyDie = false;
 
-        yield return new WaitForSeconds(phaseDuration);  // Wait for the phase-thru duration
+        yield return new WaitForSeconds(phaseDuration); 
 
-        // Restore normal collisions between Monkey and Obstacles
         monkey.isFlying = false;
         generalLogic.canMonkeyDie = true;
         soundPlayer.PlayFlapWings();
@@ -192,12 +190,12 @@ public class PowerUpController : MonoBehaviour
 
     void ActivateDecoyPower()
     {
-        StartCoroutine(ActivateDecoy());
+        StartCoroutine(ActivateDecoy()); // lion moves to decoy until it makes contact with decoy
     }
 
    IEnumerator ActivateDecoy()
     {
-        if (!isDecoyActive)
+        if (!isDecoyActive) // place marker on first use
         {
             decoyPosition = SnapToGrid(monkey.transform.position);
             Vector2 decoyPosition2D = new Vector2(decoyPosition.x, decoyPosition.y);
@@ -212,7 +210,7 @@ public class PowerUpController : MonoBehaviour
         }
         else
         {   
-            if (decoyMarker != null)
+            if (decoyMarker != null) // on second use, lion is distracted toward placed marker
             {
                 Destroy(decoyMarker);
             }
@@ -225,7 +223,7 @@ public class PowerUpController : MonoBehaviour
 
             while (Vector3.Distance(lion.transform.position, decoy.transform.position) > 0.5f)
             {
-                yield return null;  // Wait until the lion reaches the decoy
+                yield return null;
             }
 
             soundPlayer.PlayUseDecoy();
@@ -240,17 +238,15 @@ public class PowerUpController : MonoBehaviour
 
     void ActivateTeleportPower()
     {
-        if (!isTeleportSet)
+        if (!isTeleportSet) // place portal on first use
         {
             soundPlayer.PlaySpawnMagic();
-            // Set the teleport location
             teleportLocation = SnapToGrid(monkey.transform.position);
             currentPortal = Instantiate(portalPrefab, teleportLocation, Quaternion.identity);
             isTeleportSet = true;
         }
-        else
+        else // teleport to placed portal on second us
         {
-            // Teleport the monkey to the set location
             soundPlayer.PlayUsePortal();
             monkey.transform.position = teleportLocation;
             monkey.UpdateTargetPosition(teleportLocation);
@@ -259,10 +255,10 @@ public class PowerUpController : MonoBehaviour
         }
     }
 
-        Vector3 SnapToGrid(Vector3 originalPosition)
+    Vector3 SnapToGrid(Vector3 originalPosition) // ensures placements are centralized on tiles
     {
-        float snapValue = 1.0f;  // The step between the fixed positions (e.g., 1.0 for 0.5, 1.5, etc.)
-        float offset = -0.5f;    // Offset for the fixed values (-1.5, -0.5, 0.5, etc.)
+        float snapValue = 1.0f;  
+        float offset = -0.5f;    
 
         float snappedX = Mathf.Round((originalPosition.x - offset) / snapValue) * snapValue + offset;
         float snappedY = Mathf.Round((originalPosition.y - offset) / snapValue) * snapValue + offset;

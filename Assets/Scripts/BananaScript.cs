@@ -7,38 +7,33 @@ public class BananaScript : MonoBehaviour
     private GeneralLogic generalLogic;
     private SoundPlayer soundPlayer;
 
-    private float lifespan = 30f; // Time before the banana self-destructs
-    private SpriteRenderer bananaRenderer; // Reference to the SpriteRenderer
-    private bool isFading = false; // To prevent multiple fade coroutines from starting
+    private float lifespan = 30f; 
+    private SpriteRenderer bananaRenderer; 
+    private bool isFading = false;
 
-    void Start()
+    void Start() // invoke fading and destruction at specified times
     {
-        // Get the SpriteRenderer component
         bananaRenderer = GetComponent<SpriteRenderer>();
 
-        // Destroy the banana after its lifespan
         Invoke("DestroyBanana", lifespan);
 
-        // Find the SoundPlayer in the scene
         soundPlayer = FindObjectOfType<SoundPlayer>();
         soundPlayer.PlayBanana();
 
-        // Start fading the banana when there's 6 seconds left
         Invoke("StartFading", lifespan - 5.5f);
     }
 
     void Update()
     {
-        // Check if the monkey has reached the banana's position
         if (monkey != null && Vector3.Distance(transform.position, monkey.transform.position) < 0.5f)
         {
-            CollectBanana();
+            CollectBanana(); // monkey collects when touching
         }
     }
 
     public void Initialize(GameObject monkeyRef, GeneralLogic generalLogicRef)
     {
-        // Assign references dynamically when the banana is spawned
+        // assign references dynamically when the banana is spawned
         monkey = monkeyRef;
         generalLogic = generalLogicRef;
     }
@@ -47,14 +42,12 @@ public class BananaScript : MonoBehaviour
     {
         PlayRandomSound();
 
-        // Add to score in GeneralLogic
         if (generalLogic != null)
         {
             generalLogic.AddScore(1);
         }
 
-        // Destroy the banana
-        Destroy(gameObject);
+        DestroyBanana();
     }
 
     void DestroyBanana()
@@ -82,7 +75,6 @@ public class BananaScript : MonoBehaviour
         }
     }
 
-    // Start the fading coroutine
     void StartFading()
     {
         if (!isFading)
@@ -92,19 +84,18 @@ public class BananaScript : MonoBehaviour
         }
     }
 
-    // Coroutine to handle the fading effect
-    IEnumerator FadeOutAndIn()
+
+    IEnumerator FadeOutAndIn() // opacity drops to 0 and rises to 100 per duration
     {
         float fadeDuration = 0.5f;
-        while (true) // Continue fading in and out until the banana is destroyed
+        while (true) 
         {
-            yield return StartCoroutine(FadeTo(0f, fadeDuration)); // Fade out
-            yield return StartCoroutine(FadeTo(1f, fadeDuration)); // Fade in
+            yield return StartCoroutine(FadeTo(0f, fadeDuration)); 
+            yield return StartCoroutine(FadeTo(1f, fadeDuration)); 
         }
     }
 
-    // Coroutine to smoothly change the alpha value of the SpriteRenderer's color
-    IEnumerator FadeTo(float targetAlpha, float duration)
+    IEnumerator FadeTo(float targetAlpha, float duration) // steadily controls opacity over time
     {
         Color color = bananaRenderer.color;
         float startAlpha = color.a;
@@ -115,11 +106,10 @@ public class BananaScript : MonoBehaviour
             time += Time.deltaTime;
             float t = time / duration;
             color.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-            bananaRenderer.color = color; // Apply the color change to the SpriteRenderer
+            bananaRenderer.color = color; 
             yield return null;
         }
 
-        // Ensure the final alpha is set precisely
         color.a = targetAlpha;
         bananaRenderer.color = color;
     }

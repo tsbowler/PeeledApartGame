@@ -21,7 +21,8 @@ public class GameEnder : MonoBehaviour
         soundPlayer.PlayWinner();
     }
 
-    public void OnReturnButtonClick()
+    // returns to main menu and destroys objects, which are recreated on loading so music and settings return to default
+    public void OnReturnButtonClick() 
     {
         GameObject setupScriptObject = SetupScript.instance.gameObject;
 

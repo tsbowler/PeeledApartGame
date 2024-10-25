@@ -24,12 +24,13 @@ public class MoveMonkey : MonoBehaviour
         speedDefault = moveSpeed;
     }
 
-    void Update()
+    void Update() 
     {
         if ((Vector2)transform.position == targetPosition)
         {
             Vector2 newPosition = targetPosition;
 
+            // check for player inputs
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
                 newPosition += Vector2.up * moveDistance;
@@ -40,8 +41,8 @@ public class MoveMonkey : MonoBehaviour
             }
             else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                newPosition += Vector2.left * moveDistance;
-                transform.localScale = new Vector3(-1, 1, 1);
+                newPosition += Vector2.left * moveDistance; 
+                transform.localScale = new Vector3(-1, 1, 1); // change sprite direction
             }
             else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
@@ -60,6 +61,7 @@ public class MoveMonkey : MonoBehaviour
             
         }
 
+        // move and determine correct animation
         rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, moveDistance * moveSpeed * Time.fixedDeltaTime));
 
         if ((moveSpeed != speedDefault) && ((Vector2)transform.position != targetPosition))

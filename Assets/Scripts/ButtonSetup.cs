@@ -7,7 +7,7 @@ public class ButtonSetup : MonoBehaviour
 
     void Start()
     {
-        // Assign hover and click sounds to all buttons
+        // assign hover and click sounds to all buttons
         foreach (Button button in buttons)
         {
             if (AudioManager.instance != null)

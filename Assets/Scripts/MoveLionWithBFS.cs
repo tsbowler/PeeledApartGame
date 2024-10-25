@@ -19,30 +19,27 @@ public class MoveLionWithBFS : MonoBehaviour
     private float currentMoveSpeed;
     private bool isFirstTime = true;
 
-    private Transform currentTarget;  // Keeps track of current target (monkey or decoy)
-    private Vector2 lastValidMonkeyPosition; // Track the last valid monkey position
+    private Transform currentTarget;  
+    private Vector2 lastValidMonkeyPosition; 
     private SetupScript setupScript;
     public SoundPlayer soundPlayer;
 
-    void Start()
+    void Start() // init lion target and start entrance
     {
         targetPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
 
-        // Initially, the lion will target the monkey
         currentTarget = monkey;
 
-        // Initialize the last valid position to the monkey's starting position
         lastValidMonkeyPosition = monkey.position;
 
         StartCoroutine(Entrance());
     }
 
-    void Update()
+    void Update() 
     {
-        // Check if the lion has a line of sight to the current target (monkey or decoy)
-        if (HasLineOfSight(currentTarget.position))
+        if (HasLineOfSight(currentTarget.position)) // set speed based on line of sight
         {
             currentMoveSpeed = lineOfSightMoveSpeed * moveDistance;
         }
@@ -54,13 +51,12 @@ public class MoveLionWithBFS : MonoBehaviour
 
         if (!isMoving)
         {
-            // If the monkey is not on an obstacle, update the last valid position
             if (!IsMonkeyOnObstacle())
             {
                 lastValidMonkeyPosition = currentTarget.position;
             }
 
-            // Find the path to the last valid position of the monkey
+            // find the path to the last valid position of the monkey
             List<Vector2> path = FindPathBFS(transform.position, lastValidMonkeyPosition);
 
             if (path != null && path.Count > 0)
@@ -69,7 +65,7 @@ public class MoveLionWithBFS : MonoBehaviour
             }
         if (!isFirstTime)
         {
-            StartCoroutine(MoveLion());
+            StartCoroutine(MoveLion()); // start movement after entrance
         }
         }
         
@@ -86,19 +82,16 @@ public class MoveLionWithBFS : MonoBehaviour
 
     IEnumerator Entrance()
     {
-        // Wait for 5 seconds before the lion does anything
         yield return new WaitForSeconds(5f);
         
-        // Enable the lion and play the roar sound
         lionArt.enabled = true;
         soundPlayer.PlayRoar();
 
-        // Wait until the roar finishes playing before moving the lion
         yield return new WaitForSeconds(1f); 
 
         isFirstTime = false;
 
-        // Now set the lion speed and movement
+        // set the lion speed and movement
         if (SetupScript.instance != null)
         {
             normalMoveSpeed = SetupScript.instance.GetLionSpeed();
@@ -113,11 +106,11 @@ public class MoveLionWithBFS : MonoBehaviour
         isMoving = true;
         animator.SetBool("isWalking", true);
 
-        while ((Vector2)transform.position != targetPosition)
+        while ((Vector2)transform.position != targetPosition) 
         {
-            rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, currentMoveSpeed * Time.fixedDeltaTime));
+            rb.MovePosition(Vector2.MoveTowards(rb.position, targetPosition, currentMoveSpeed * Time.fixedDeltaTime)); // move
 
-            if (targetPosition.x > transform.position.x)
+            if (targetPosition.x > transform.position.x) // set sprite direction
             {
                 transform.localScale = new Vector3(1, 1, 1);
             }
@@ -134,7 +127,7 @@ public class MoveLionWithBFS : MonoBehaviour
     }
 
 
-    bool HasLineOfSight(Vector2 targetPosition)
+    bool HasLineOfSight(Vector2 targetPosition) // check if line exists to monkey without crossing obstacles
     {
         Vector2 direction = targetPosition - (Vector2)transform.position;
         float distance = direction.magnitude;
@@ -142,7 +135,7 @@ public class MoveLionWithBFS : MonoBehaviour
         return hit.collider == null;
     }
 
-    List<Vector2> FindPathBFS(Vector2 start, Vector2 target)
+    List<Vector2> FindPathBFS(Vector2 start, Vector2 target) // algorithm to determine best path for lion
     {
         Queue<Vector2> frontier = new Queue<Vector2>();
         frontier.Enqueue(start);
@@ -179,6 +172,7 @@ public class MoveLionWithBFS : MonoBehaviour
         return null;
     }
 
+    // make shortest path found from BFS
     List<Vector2> ReconstructPath(Dictionary<Vector2, Vector2?> cameFrom, Vector2 start, Vector2 end)
     {
         List<Vector2> path = new List<Vector2>();
@@ -207,7 +201,7 @@ public class MoveLionWithBFS : MonoBehaviour
         return obstaclesTilemap.HasTile(monkeyTilePos);
     }
 
-    public void SetTarget(Vector3 target)
+    public void SetTarget(Vector3 target) // allows decoy powerup to distract lion
     {
         GameObject tempTarget = new GameObject("Temporary Target");
         tempTarget.transform.position = target;

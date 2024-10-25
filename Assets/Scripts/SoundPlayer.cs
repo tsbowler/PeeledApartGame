@@ -50,7 +50,7 @@ public class SoundPlayer : MonoBehaviour
     {
         freeze.Play();
     }
-    public void PlayRunning()
+    public void PlayRunning() // sounds that run too long can be called again to stop early
     {
         if(!isRunningPlaying)
         {

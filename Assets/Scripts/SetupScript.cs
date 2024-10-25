@@ -4,49 +4,44 @@ using TMPro;
 
 public class SetupScript : MonoBehaviour
 {
-    public static SetupScript instance; // Singleton reference
+    public static SetupScript instance; 
     public GameObject AudioManager;
 
     public TextMeshProUGUI currentDifficultyText; 
 
-    // References to the arrow buttons
     public Button leftArrowButton;
     public Button rightArrowButton;
 
-    // Variable to hold the lion speed, default to Normal difficulty (1.85)
+
     private float lionSpeed = 1.8f;
 
-        void Awake()
+    void Awake() // persist settings from menu to gameplay
     {
         if (instance == null)
         {
-            instance = this; // Set the singleton instance
-            DontDestroyOnLoad(gameObject); // Make this object persistent
+            instance = this; 
+            DontDestroyOnLoad(gameObject); 
         }
         else if (instance != this)
         {
-            Destroy(gameObject); // Destroy duplicate instances
+            Destroy(gameObject); 
         }
     }
 
 
     void Start()
     {
-        // Initialize the difficulty text
         UpdateDifficultyText();
 
-        // Set up the arrow button event listeners
         if (leftArrowButton != null && rightArrowButton != null) {
             leftArrowButton.onClick.AddListener(LowerDifficulty);
             rightArrowButton.onClick.AddListener(RaiseDifficulty);
         }
 
-        // Check button availability
         UpdateButtonInteractivity();
     }
 
-    // Method to lower the difficulty
-    public void LowerDifficulty()
+    public void LowerDifficulty() // decrease lion speed at predetermined intervals
     {
         if (lionSpeed == 2.4f)
         {
@@ -69,8 +64,7 @@ public class SetupScript : MonoBehaviour
         UpdateButtonInteractivity();
     }
 
-    // Method to raise the difficulty
-    public void RaiseDifficulty()
+    public void RaiseDifficulty() // increase lion speed
     {
         if (lionSpeed == 1.5f)
         {
@@ -93,8 +87,7 @@ public class SetupScript : MonoBehaviour
         UpdateButtonInteractivity();
     }
 
-    // Method to update the difficulty text based on current speed
-    private void UpdateDifficultyText()
+    private void UpdateDifficultyText() // display text according to lion speed
     {
         if (currentDifficultyText == null) return;
 
@@ -120,8 +113,7 @@ public class SetupScript : MonoBehaviour
         }
     }
 
-    // Method to enable or disable arrow buttons based on current difficulty
-    private void UpdateButtonInteractivity()
+    private void UpdateButtonInteractivity() // disable button use after min/max values reached
     {
         if (leftArrowButton != null) 
             leftArrowButton.interactable = lionSpeed > 1.5f;
@@ -130,7 +122,7 @@ public class SetupScript : MonoBehaviour
             rightArrowButton.interactable = lionSpeed < 2.4f;
     }
 
-    // Method to get the lion speed (for use elsewhere in the game)
+    // called in map scenes
     public float GetLionSpeed()
     {
         return lionSpeed;
