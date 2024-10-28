@@ -1,4 +1,4 @@
-# Peeled Apart
+# Peeled Apart -- Pac-Man Reimagined: A Cheeky Monkey VS. The King of the Jungle!
 
 Video Overview: https://drive.google.com/file/d/1wj2katlyxBci-eXwRkCE0G68fNoWcUBu/view?usp=drive_link
 
